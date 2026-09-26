@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ivy_gpt.db.models import ChatMessage, Conversation, LongTermMemory, RefreshToken, User
+from ivy_gpt.db.models import ChatMessage, Conversation, LongTermMemory, MCPServer, RefreshToken, User
 
 
 async def create_or_update_conversation(
@@ -263,3 +263,62 @@ async def revoke_refresh_token(db: AsyncSession, token_hash: str) -> None:
     if token:
         token.revoked = True
         await db.commit()
+
+
+async def list_mcp_servers(db: AsyncSession, user_id: str) -> list[MCPServer]:
+    result = await db.execute(
+        select(MCPServer)
+        .where(MCPServer.user_id == user_id)
+        .order_by(MCPServer.created_at.desc())
+    )
+    return list(result.scalars().all())
+
+
+async def create_mcp_server(
+    db: AsyncSession,
+    user_id: str,
+    name: str,
+    transport: str,
+    command: str | None = None,
+    args: list[str] | None = None,
+    url: str | None = None,
+    headers: dict[str, str] | None = None,
+    tool_specs: list[dict] | None = None,
+    oauth_tokens: dict | None = None,
+    enabled: bool = True
+) -> MCPServer:
+    item = MCPServer(
+        user_id=user_id,
+        name=name,
+        transport=transport,
+        command=command,
+        args=args or [],
+        url=url,
+        headers=headers or {},
+        tool_specs=tool_specs or [],
+        oauth_tokens=oauth_tokens or {},
+        enabled=enabled,
+        created_at=datetime.utcnow(),
+        updated_at=datetime.utcnow()
+    )
+    db.add(item)
+    await db.commit()
+    await db.refresh(item)
+    return item
+
+
+async def delete_mcp_server(db: AsyncSession, user_id: str, server_id: str) -> bool:
+    result = await db.execute(
+        select(MCPServer).where(
+            MCPServer.id == server_id,
+            MCPServer.user_id == user_id
+        )
+    )
+    item = result.scalar_one_or_none()
+
+    if not item:
+        return False
+
+    await db.delete(item)
+    await db.commit()
+    return True

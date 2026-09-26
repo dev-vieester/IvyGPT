@@ -74,8 +74,10 @@ Configuration is loaded through `ivy_gpt.config.Settings` from environment varia
 Supported values include:
 
 - `DATABASE_URL`
-- `GOOGLE_API_KEY`
-- `GOOGLE_MODEL` or `GEMINI_MODEL`
+- `GOOGLE_API_KEY` for embeddings
+- `OPENROUTER_API_KEY` for chat
+- `OPENROUTER_MODEL`
+- `OPENROUTER_BASE_URL`
 - `TAVILY_API_KEY`
 - `CORS_ALLOW_ORIGINS`
 - `APP_BASE_URL`
@@ -91,6 +93,7 @@ Supported values include:
 - `SMTP_FROM_NAME`
 - `SMTP_USE_SSL`
 - `SMTP_USE_TLS`
+- `MCP_CONFIG_PATH`
 
 Example local Postgres URL:
 
@@ -135,3 +138,50 @@ The agent includes tools for:
 - arXiv research-paper search
 - PubMed biomedical literature search
 - Long-term memory save and recall
+- User-configured MCP tools from `mcp_servers.json`
+
+## MCP Tools
+
+Add MCP servers in `mcp_servers.json`. Streamable HTTP is the primary transport. Keep stdio entries disabled unless you need them as a local backup.
+
+From the frontend MCP dialog, adding a server connects to that MCP server immediately, discovers its tools, and saves the server plus discovered tool metadata for your account. The agent cache is cleared after add/delete, so the next chat request rebuilds the agent with all enabled MCP servers and their live tools.
+
+Example:
+
+```json
+{
+  "servers": {
+    "data_fetch_mcp_http": {
+      "enabled": true,
+      "transport": "streamable-http",
+      "url": "http://localhost:8050/mcp",
+      "headers": {
+        "Authorization": "Bearer your-token"
+      }
+    },
+    "data_fetch_mcp_stdio_backup": {
+      "enabled": false,
+      "transport": "stdio",
+      "command": "{venv_python}",
+      "args": [
+        "{project_root}/CH-1_CreateMCP/1_first_mcpserver_stdio.py"
+      ]
+    }
+  }
+}
+```
+
+Supported placeholders:
+
+- `{project_root}`: this project directory
+- `{venv_python}`: the Python executable running IvyGPT
+
+Recommended MCP transports:
+
+- `streamable-http` as the primary transport
+- `stdio` as a disabled backup option
+
+The loader still accepts legacy aliases such as `httpstreams`, `httpstream`, and `streamable_http`, but new configs should use `streamable-http`.
+
+When running in Docker, stdio MCP server paths must exist inside the container. HTTP MCP servers must be reachable from inside the container.
+For authenticated HTTP MCP servers, add headers in the `headers` object. Headers are passed to `MultiServerMCPClient` with the server config.

@@ -34,4 +34,7 @@ dependencies = [
     "arxiv<3",
     "xmltodict>=1.0.4",
     "ddgs>=9.16.0",
+    "langchain-mcp-adapters>=0.3.2",
+    "sentry-sdk>=2.70.0",
+    "langchain-openai>=1.2.2",
 ]

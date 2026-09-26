@@ -9,7 +9,9 @@ services:
       CORS_ALLOW_ORIGINS: http://localhost:8080
       JWT_SECRET_KEY: ${JWT_SECRET_KEY:-replace-with-a-long-random-secret}
       GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
-      GOOGLE_MODEL: ${GOOGLE_MODEL:-gemini-3.8-flash}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      OPENROUTER_MODEL: ${OPENROUTER_MODEL:-openai/gpt-4o-mini}
+      OPENROUTER_BASE_URL: ${OPENROUTER_BASE_URL:-https://openrouter.ai/api/v1}
       TAVILY_API_KEY: ${TAVILY_API_KEY:-}
       GOOGLE_OAUTH_CLIENT_ID: ${GOOGLE_OAUTH_CLIENT_ID:-}
       GOOGLE_OAUTH_CLIENT_SECRET: ${GOOGLE_OAUTH_CLIENT_SECRET:-}
@@ -21,6 +23,7 @@ services:
       SMTP_FROM_NAME: ${SMTP_FROM_NAME:-IvyGPT}
       SMTP_USE_SSL: ${SMTP_USE_SSL:-false}
       SMTP_USE_TLS: ${SMTP_USE_TLS:-true}
+      MCP_CONFIG_PATH: ${MCP_CONFIG_PATH:-mcp_servers.json}
       RUN_MIGRATIONS: "true"
     ports:
       - "8080:8080"
@@ -44,7 +47,9 @@ services:
       APP_BASE_URL: http://localhost:8080
       JWT_SECRET_KEY: ${JWT_SECRET_KEY:-replace-with-a-long-random-secret}
       GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
-      GOOGLE_MODEL: ${GOOGLE_MODEL:-gemini-3.8-flash}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      OPENROUTER_MODEL: ${OPENROUTER_MODEL:-openai/gpt-4o-mini}
+      OPENROUTER_BASE_URL: ${OPENROUTER_BASE_URL:-https://openrouter.ai/api/v1}
       TAVILY_API_KEY: ${TAVILY_API_KEY:-}
       GOOGLE_OAUTH_CLIENT_ID: ${GOOGLE_OAUTH_CLIENT_ID:-}
       GOOGLE_OAUTH_CLIENT_SECRET: ${GOOGLE_OAUTH_CLIENT_SECRET:-}
@@ -56,6 +61,7 @@ services:
       SMTP_FROM_NAME: ${SMTP_FROM_NAME:-IvyGPT}
       SMTP_USE_SSL: ${SMTP_USE_SSL:-false}
       SMTP_USE_TLS: ${SMTP_USE_TLS:-true}
+      MCP_CONFIG_PATH: ${MCP_CONFIG_PATH:-mcp_servers.json}
       RUN_MIGRATIONS: "false"
     command: ["celery", "-A", "ivy_gpt.services.email_tasks.celery_app", "worker", "--loglevel=info", "--pool=solo"]
     volumes:

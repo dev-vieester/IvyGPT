@@ -134,7 +134,7 @@ async def chat_stream(
 
     user_message = data.get("message", "")
     thread_id = data.get("thread_id", "default")
-    selected_model = data.get("model", "gemini-2.5-flash")
+    selected_model = data.get("model")
 
     if not user_message.strip():
         return JSONResponse(
@@ -142,7 +142,7 @@ async def chat_stream(
             status_code=400
         )
 
-    agent = await get_agent(selected_model)
+    agent = await get_agent(selected_model, user_id=current_user.id, db=db)
 
     await create_or_update_conversation(db, current_user.id, thread_id, user_message)
     await save_chat_message(db, current_user.id, thread_id, "user", user_message)

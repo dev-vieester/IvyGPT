@@ -24,6 +24,9 @@ class Settings(BaseSettings):
     gemini_model: str | None = Field(default=None, alias="GEMINI_MODEL")
     google_model: str | None = Field(default=None, alias="GOOGLE_MODEL")
     google_api_key: str | None = Field(default=None, alias="GOOGLE_API_KEY")
+    openrouter_api_key: str | None = Field(default=None, alias="OPENROUTER_API_KEY")
+    openrouter_model: str = Field(default="qwen/qwen3.8-27b:free", alias="OPENROUTER_MODEL")
+    openrouter_base_url: str = Field(default="https://openrouter.ai/api/v1", alias="OPENROUTER_BASE_URL")
     tavily_api_key: str | None = Field(default=None, alias="TAVILY_API_KEY")
     cors_allow_origins: str = Field(default="*", alias="CORS_ALLOW_ORIGINS")
     app_base_url: str = Field(default="http://localhost:8080", alias="APP_BASE_URL")
@@ -42,6 +45,11 @@ class Settings(BaseSettings):
     smtp_from_name: str | None = Field(default=None, alias="SMTP_FROM_NAME")
     smtp_use_ssl: bool = Field(default=False, alias="SMTP_USE_SSL")
     smtp_use_tls: bool = Field(default=True, alias="SMTP_USE_TLS")
+    mcp_config_path: str = Field(default="mcp_servers.json", alias="MCP_CONFIG_PATH")
+    sentry_dsn: str | None = Field(default=None, alias="SENTRY_DSN")
+    sentry_send_default_pii: bool = Field(default=True, alias="SENTRY_SEND_DEFAULT_PII")
+    sentry_enable_logs: bool = Field(default=True, alias="SENTRY_ENABLE_LOGS")
+    sentry_traces_sample_rate: float = Field(default=1.0, alias="SENTRY_TRACES_SAMPLE_RATE")
 
     model_config = SettingsConfigDict(
         env_file=PROJECT_ROOT / ".env",
@@ -51,7 +59,7 @@ class Settings(BaseSettings):
 
     @property
     def default_model(self) -> str:
-        return self.gemini_model or self.google_model or "gemini-3.8-flash"
+        return self.openrouter_model
 
     @property
     def async_database_url(self) -> str:
@@ -93,6 +101,9 @@ def apply_runtime_environment() -> None:
 
     if settings.google_api_key:
         os.environ.setdefault("GOOGLE_API_KEY", settings.google_api_key)
+
+    if settings.openrouter_api_key:
+        os.environ.setdefault("OPENROUTER_API_KEY", settings.openrouter_api_key)
 
     if settings.tavily_api_key:
         os.environ.setdefault("TAVILY_API_KEY", settings.tavily_api_key)

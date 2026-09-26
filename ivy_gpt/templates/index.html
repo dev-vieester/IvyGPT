@@ -170,6 +170,22 @@
             outline: none;
         }
 
+        .auth-modal textarea {
+            width: 100%;
+            min-height: 84px;
+            background: #111;
+            border: 1px solid #3a3a3a;
+            color: #ececec;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            line-height: 1.45;
+            outline: none;
+            resize: vertical;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+        }
+
         .auth-submit,
         .google-auth {
             width: 100%;
@@ -202,6 +218,103 @@
             color: #ff9b9b;
             font-size: 13px;
             margin-top: 10px;
+        }
+
+        .mcp-list {
+            max-height: 260px;
+            overflow-y: auto;
+            margin-top: 12px;
+            border-top: 1px solid #333;
+            padding-top: 10px;
+        }
+
+        .mcp-item {
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: #181818;
+        }
+
+        .mcp-item-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+
+        .mcp-item-name {
+            font-size: 14px;
+            color: #ececec;
+            overflow-wrap: anywhere;
+        }
+
+        .mcp-item-meta {
+            color: #aaa;
+            font-size: 12px;
+            overflow-wrap: anywhere;
+        }
+
+        .mcp-item-headers {
+            margin-top: 4px;
+            color: #858585;
+            font-size: 12px;
+            overflow-wrap: anywhere;
+        }
+
+        .mcp-item-tools {
+            margin-top: 8px;
+            color: #bdbdbd;
+            font-size: 12px;
+            overflow-wrap: anywhere;
+        }
+
+        .mcp-item-tools ul {
+            margin: 6px 0 0;
+            padding-left: 18px;
+        }
+
+        .mcp-item-tools li {
+            margin: 4px 0;
+        }
+
+        .mcp-item-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .mcp-view,
+        .mcp-remove {
+            border: 1px solid #5a2f2f;
+            background: #2a1717;
+            color: #ffb4b4;
+            border-radius: 8px;
+            padding: 7px 9px;
+            cursor: pointer;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .mcp-view {
+            border-color: #3a4a62;
+            background: #17202c;
+            color: #c9dcff;
+        }
+
+        .mcp-view:hover {
+            background: #202d3f;
+        }
+
+        .mcp-remove:hover {
+            background: #3a1d1d;
+        }
+
+        .mcp-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
         }
 
         .main {
@@ -331,8 +444,117 @@
         .message-content {
             color: #ececec;
             font-size: 16px;
-            white-space: pre-wrap;
             overflow-wrap: anywhere;
+        }
+
+        .message-content p {
+            margin: 0 0 12px;
+        }
+
+        .message-content p:last-child,
+        .message-content ul:last-child,
+        .message-content ol:last-child,
+        .message-content pre:last-child {
+            margin-bottom: 0;
+        }
+
+        .message-content h1,
+        .message-content h2,
+        .message-content h3 {
+            margin: 18px 0 10px;
+            line-height: 1.3;
+            font-weight: 650;
+        }
+
+        .message-content h1 {
+            font-size: 24px;
+        }
+
+        .message-content h2 {
+            font-size: 21px;
+        }
+
+        .message-content h3 {
+            font-size: 18px;
+        }
+
+        .message-content ul,
+        .message-content ol {
+            margin: 0 0 14px;
+            padding-left: 22px;
+        }
+
+        .message-content li {
+            margin: 4px 0;
+        }
+
+        .message-content code {
+            background: #111;
+            border: 1px solid #343434;
+            border-radius: 6px;
+            padding: 2px 5px;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            font-size: 0.92em;
+        }
+
+        .message-content pre {
+            margin: 12px 0 14px;
+            padding: 14px;
+            background: #111;
+            border: 1px solid #343434;
+            border-radius: 8px;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        .message-content pre code {
+            border: 0;
+            background: transparent;
+            padding: 0;
+            font-size: 13px;
+        }
+
+        .thinking-loader {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #b8b8b8;
+            font-size: 14px;
+        }
+
+        .thinking-dots {
+            display: inline-flex;
+            gap: 4px;
+        }
+
+        .thinking-dots span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #10a37f;
+            animation: thinkingPulse 1s infinite ease-in-out;
+        }
+
+        .thinking-dots span:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+
+        .thinking-dots span:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        @keyframes thinkingPulse {
+            0%,
+            80%,
+            100% {
+                opacity: 0.35;
+                transform: translateY(0);
+            }
+
+            40% {
+                opacity: 1;
+                transform: translateY(-3px);
+            }
         }
 
         .tool-progress {
@@ -564,6 +786,10 @@
                 font-size: 16px;
                 margin-left: 6px;
             }
+
+            .mcp-row {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -585,6 +811,7 @@
             <button onclick="openAuthModal('login')">Sign in</button>
         </div>
         <div class="auth-actions" id="signedInActions" style="display: none;">
+            <button onclick="openMcpModal()">MCP</button>
             <button onclick="logout()">Sign out</button>
         </div>
     </div>
@@ -645,7 +872,7 @@
             ></textarea>
 
             <select id="modelSelect" class="model-select" title="Select model">
-                <option value="gemini-3.8-flash">gemini-3.8-flash</option>
+                <option value="openai/gpt-4o-mini">openai/gpt-4o-mini</option>
             </select>
 
             <button class="mic-btn" id="micBtn" onclick="toggleDictation()" title="Dictate">
@@ -685,6 +912,33 @@
     </div>
 </div>
 
+<div class="auth-modal-backdrop" id="mcpModalBackdrop">
+    <div class="auth-modal">
+        <button class="auth-close" onclick="closeMcpModal()">Close</button>
+        <h2>MCP Servers</h2>
+        <p>Add Streamable HTTP MCP servers for your account. Use stdio only as a backup.</p>
+
+        <input id="mcpName" type="text" placeholder="Server name">
+
+        <select id="mcpTransport" class="model-select" style="width: 100%; max-width: none; margin: 0 0 10px;">
+            <option value="streamable-http">streamable-http</option>
+            <option value="stdio">stdio backup</option>
+        </select>
+
+        <input id="mcpUrl" type="text" placeholder="Streamable HTTP URL, e.g. http://localhost:8050/mcp">
+        <input id="mcpCommand" type="text" placeholder="Stdio command, e.g. {venv_python}">
+        <input id="mcpArgs" type="text" placeholder="Stdio args, comma-separated">
+        <textarea id="mcpHeaders" placeholder='Headers: {"Authorization":"Bearer token"} or Authorization: Bearer token'></textarea>
+
+        <button class="auth-submit" onclick="addMcpServer()">Add MCP server</button>
+        <button class="google-auth" onclick="connectMcpOAuth()">Connect with OAuth</button>
+        <button class="google-auth" id="mcpViewConnected" onclick="toggleMcpServerList()">View connected MCPs</button>
+        <div class="auth-error" id="mcpError"></div>
+
+        <div class="mcp-list" id="mcpList" style="display: none;"></div>
+    </div>
+</div>
+
 <script>
     const chatContainer = document.getElementById("chatContainer");
     const messageInput = document.getElementById("messageInput");
@@ -708,11 +962,24 @@
     const signedInActions = document.getElementById("signedInActions");
     const authSwitchText = document.getElementById("authSwitchText");
     const authSwitchBtn = document.getElementById("authSwitchBtn");
+    const mcpModalBackdrop = document.getElementById("mcpModalBackdrop");
+    const mcpName = document.getElementById("mcpName");
+    const mcpTransport = document.getElementById("mcpTransport");
+    const mcpUrl = document.getElementById("mcpUrl");
+    const mcpCommand = document.getElementById("mcpCommand");
+    const mcpArgs = document.getElementById("mcpArgs");
+    const mcpHeaders = document.getElementById("mcpHeaders");
+    const mcpError = document.getElementById("mcpError");
+    const mcpViewConnected = document.getElementById("mcpViewConnected");
+    const mcpList = document.getElementById("mcpList");
 
     let currentUser = null;
     let authMode = "login";
     let authStep = "email";
     let signupToken = null;
+    let mcpServersCache = [];
+    let selectedMcpServerId = null;
+    let mcpServerListVisible = false;
 
     function getAccessToken() {
         return localStorage.getItem("access_token");
@@ -809,6 +1076,13 @@
         const params = new URLSearchParams(window.location.search);
         const accessToken = params.get("auth_access_token");
         const refreshToken = params.get("auth_refresh_token");
+        const mcpConnected = params.get("mcp_connected");
+
+        if (mcpConnected) {
+            statusText.textContent = "MCP server connected";
+            window.history.replaceState({}, document.title, window.location.pathname);
+            return;
+        }
 
         if (!accessToken || !refreshToken) {
             return;
@@ -864,6 +1138,295 @@
 
     function toggleAuthMode() {
         openAuthModal(authMode === "signup" ? "login" : "signup");
+    }
+
+    async function openMcpModal() {
+        if (!getAccessToken()) {
+            openAuthModal("login");
+            return;
+        }
+
+        mcpError.textContent = "";
+        mcpServerListVisible = false;
+        mcpList.style.display = "none";
+        mcpViewConnected.textContent = "View connected MCPs";
+        mcpModalBackdrop.classList.add("open");
+        mcpName.focus();
+    }
+
+    function closeMcpModal() {
+        mcpModalBackdrop.classList.remove("open");
+    }
+
+    function renderMcpServers(servers) {
+        if (!servers || servers.length === 0) {
+            mcpServersCache = [];
+            selectedMcpServerId = null;
+            mcpList.innerHTML = `<div class="mcp-item-meta">No MCP servers added yet.</div>`;
+            return;
+        }
+
+        mcpServersCache = servers;
+
+        if (!selectedMcpServerId || !servers.some(server => server.id === selectedMcpServerId)) {
+            selectedMcpServerId = null;
+        }
+
+        mcpList.innerHTML = "";
+
+        servers.forEach(server => {
+            const item = document.createElement("div");
+            item.className = "mcp-item";
+            const isSelected = selectedMcpServerId === server.id;
+
+            const top = document.createElement("div");
+            top.className = "mcp-item-top";
+
+            const name = document.createElement("div");
+            name.className = "mcp-item-name";
+            name.textContent = server.name;
+
+            const actions = document.createElement("div");
+            actions.className = "mcp-item-actions";
+
+            const viewButton = document.createElement("button");
+            viewButton.className = "mcp-view";
+            viewButton.textContent = isSelected ? "Hide tools" : "View tools";
+            viewButton.onclick = () => {
+                selectedMcpServerId = isSelected ? null : server.id;
+                renderMcpServers(mcpServersCache);
+            };
+
+            const removeButton = document.createElement("button");
+            removeButton.className = "mcp-remove";
+            removeButton.textContent = "Remove";
+            removeButton.onclick = () => removeMcpServer(server.id);
+
+            actions.appendChild(viewButton);
+            actions.appendChild(removeButton);
+
+            top.appendChild(name);
+            top.appendChild(actions);
+
+            const meta = document.createElement("div");
+            meta.className = "mcp-item-meta";
+
+            const target = server.url || [server.command, ...(server.args || [])].filter(Boolean).join(" ");
+            const toolCount = (server.tool_specs || []).length;
+            meta.textContent = `${server.transport} - ${server.enabled ? "enabled" : "disabled"} - ${toolCount} tool${toolCount === 1 ? "" : "s"} - ${target || "no target"}`;
+
+            item.appendChild(top);
+            item.appendChild(meta);
+
+            const headerNames = Object.keys(server.headers || {});
+
+            if (headerNames.length) {
+                const headers = document.createElement("div");
+                headers.className = "mcp-item-headers";
+                headers.textContent = `Headers: ${headerNames.map(name => `${name}: ******`).join(", ")}`;
+                item.appendChild(headers);
+            }
+
+            const toolSpecs = server.tool_specs || [];
+
+            if (isSelected) {
+                const tools = document.createElement("div");
+                tools.className = "mcp-item-tools";
+
+                if (toolSpecs.length) {
+                    const title = document.createElement("div");
+                    title.textContent = "Tools";
+
+                    const list = document.createElement("ul");
+
+                    toolSpecs.forEach(tool => {
+                        const row = document.createElement("li");
+                        const description = tool.description ? ` - ${tool.description}` : "";
+                        row.textContent = `${tool.name || "Unnamed tool"}${description}`;
+                        list.appendChild(row);
+                    });
+
+                    tools.appendChild(title);
+                    tools.appendChild(list);
+                } else {
+                    tools.textContent = "No tools were discovered for this MCP server.";
+                }
+
+                item.appendChild(tools);
+            }
+
+            mcpList.appendChild(item);
+        });
+    }
+
+    async function toggleMcpServerList() {
+        mcpServerListVisible = !mcpServerListVisible;
+        mcpList.style.display = mcpServerListVisible ? "block" : "none";
+        mcpViewConnected.textContent = mcpServerListVisible ? "Hide connected MCPs" : "View connected MCPs";
+
+        if (mcpServerListVisible) {
+            await loadMcpServers();
+        }
+    }
+
+    async function loadMcpServers() {
+        try {
+            const response = await apiFetch("/mcp/servers");
+
+            if (!response.ok) {
+                throw new Error(await readError(response));
+            }
+
+            const data = await response.json();
+            renderMcpServers(data.servers || []);
+
+        } catch (error) {
+            mcpError.textContent = error.message;
+        }
+    }
+
+    async function addMcpServer() {
+        mcpError.textContent = "";
+
+        const name = mcpName.value.trim();
+        const transport = mcpTransport.value;
+        const args = mcpArgs.value
+            .split(",")
+            .map(item => item.trim())
+            .filter(Boolean);
+        let headers = {};
+
+        if (!name) {
+            mcpError.textContent = "Server name is required.";
+            return;
+        }
+
+        if (mcpHeaders.value.trim()) {
+            try {
+                headers = parseHeaderInput(mcpHeaders.value);
+            } catch (error) {
+                mcpError.textContent = error.message || "Headers must be valid JSON or Name: value lines.";
+                return;
+            }
+        }
+
+        const payload = {
+            name,
+            transport,
+            headers,
+            enabled: true
+        };
+
+        if (transport === "stdio") {
+            payload.command = mcpCommand.value.trim();
+            payload.args = args;
+
+            if (!payload.command) {
+                mcpError.textContent = "Command is required for stdio MCP servers.";
+                return;
+            }
+        } else {
+            payload.url = mcpUrl.value.trim();
+
+            if (!payload.url) {
+                mcpError.textContent = "URL is required for Streamable HTTP MCP servers.";
+                return;
+            }
+        }
+
+        try {
+            const response = await apiFetch("/mcp/servers", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error(await readError(response));
+            }
+
+            mcpName.value = "";
+            mcpUrl.value = "";
+            mcpCommand.value = "";
+            mcpArgs.value = "";
+            mcpHeaders.value = "";
+            statusText.textContent = "MCP server added";
+
+            if (mcpServerListVisible) {
+                await loadMcpServers();
+            }
+
+        } catch (error) {
+            mcpError.textContent = error.message;
+        }
+    }
+
+    async function connectMcpOAuth() {
+        mcpError.textContent = "";
+
+        const name = mcpName.value.trim();
+        const url = mcpUrl.value.trim();
+        let headers = {};
+
+        if (!name) {
+            mcpError.textContent = "Server name is required.";
+            return;
+        }
+
+        if (!url) {
+            mcpError.textContent = "Streamable HTTP URL is required.";
+            return;
+        }
+
+        if (mcpHeaders.value.trim()) {
+            try {
+                headers = parseHeaderInput(mcpHeaders.value);
+            } catch (error) {
+                mcpError.textContent = error.message || "Headers must be valid JSON or Name: value lines.";
+                return;
+            }
+        }
+
+        try {
+            const response = await apiFetch("/mcp/oauth/start", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, url, headers })
+            });
+
+            if (!response.ok) {
+                throw new Error(await readError(response));
+            }
+
+            const data = await response.json();
+            window.location.href = data.authorization_url;
+
+        } catch (error) {
+            mcpError.textContent = error.message;
+        }
+    }
+
+    async function removeMcpServer(serverId) {
+        mcpError.textContent = "";
+
+        try {
+            const response = await apiFetch(`/mcp/servers/${serverId}`, {
+                method: "DELETE"
+            });
+
+            if (!response.ok) {
+                throw new Error(await readError(response));
+            }
+
+            statusText.textContent = "MCP server removed";
+
+            if (mcpServerListVisible) {
+                await loadMcpServers();
+            }
+
+        } catch (error) {
+            mcpError.textContent = error.message;
+        }
     }
 
     function startGoogleAuth() {
@@ -962,7 +1525,39 @@
     async function readError(response) {
         try {
             const data = await response.json();
-            return data.detail || data.message || "Request failed.";
+
+            if (typeof data.detail === "string") {
+                return data.detail;
+            }
+
+            if (Array.isArray(data.detail)) {
+                return data.detail
+                    .map(item => {
+                        if (typeof item === "string") return item;
+
+                        const location = Array.isArray(item.loc)
+                            ? item.loc.filter(part => part !== "body").join(".")
+                            : "";
+                        const message = item.msg || JSON.stringify(item);
+
+                        return location ? `${location}: ${message}` : message;
+                    })
+                    .join(" ");
+            }
+
+            if (data.detail && typeof data.detail === "object") {
+                return data.detail.message || JSON.stringify(data.detail);
+            }
+
+            if (typeof data.message === "string") {
+                return data.message;
+            }
+
+            if (typeof data.error === "string") {
+                return data.error;
+            }
+
+            return "Request failed.";
         } catch (error) {
             return "Request failed.";
         }
@@ -1170,6 +1765,193 @@
         document.getElementById("fileInput").click();
     }
 
+    function escapeHtml(value) {
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function renderInlineMarkdown(value) {
+        let html = escapeHtml(value);
+
+        html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
+        html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+        html = html.replace(/\*([^*]+)\*/g, "<em>$1</em>");
+
+        return html;
+    }
+
+    function flushParagraph(parts, output) {
+        if (parts.length === 0) return;
+
+        output.push(`<p>${renderInlineMarkdown(parts.join(" "))}</p>`);
+        parts.length = 0;
+    }
+
+    function flushList(items, ordered, output) {
+        if (items.length === 0) return;
+
+        const tag = ordered ? "ol" : "ul";
+        output.push(`<${tag}>${items.map(item => `<li>${renderInlineMarkdown(item)}</li>`).join("")}</${tag}>`);
+        items.length = 0;
+    }
+
+    function renderMarkdown(content) {
+        const text = String(content || "").trim();
+
+        if (!text) {
+            return "";
+        }
+
+        const lines = text.split(/\r?\n/);
+        const output = [];
+        const paragraph = [];
+        let listItems = [];
+        let orderedList = false;
+        let inCodeBlock = false;
+        let codeLines = [];
+
+        lines.forEach(line => {
+            const trimmed = line.trim();
+
+            if (trimmed.startsWith("```")) {
+                if (inCodeBlock) {
+                    output.push(`<pre><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
+                    codeLines = [];
+                    inCodeBlock = false;
+                } else {
+                    flushParagraph(paragraph, output);
+                    flushList(listItems, orderedList, output);
+                    inCodeBlock = true;
+                }
+
+                return;
+            }
+
+            if (inCodeBlock) {
+                codeLines.push(line);
+                return;
+            }
+
+            if (!trimmed) {
+                flushParagraph(paragraph, output);
+                flushList(listItems, orderedList, output);
+                return;
+            }
+
+            const headingMatch = trimmed.match(/^(#{1,3})\s+(.+)$/);
+
+            if (headingMatch) {
+                flushParagraph(paragraph, output);
+                flushList(listItems, orderedList, output);
+
+                const level = headingMatch[1].length;
+                output.push(`<h${level}>${renderInlineMarkdown(headingMatch[2])}</h${level}>`);
+                return;
+            }
+
+            const unorderedMatch = trimmed.match(/^[-*]\s+(.+)$/);
+            const orderedMatch = trimmed.match(/^\d+\.\s+(.+)$/);
+
+            if (unorderedMatch || orderedMatch) {
+                flushParagraph(paragraph, output);
+
+                const nextOrdered = Boolean(orderedMatch);
+
+                if (listItems.length && orderedList !== nextOrdered) {
+                    flushList(listItems, orderedList, output);
+                }
+
+                orderedList = nextOrdered;
+                listItems.push((orderedMatch || unorderedMatch)[1]);
+                return;
+            }
+
+            flushList(listItems, orderedList, output);
+            paragraph.push(trimmed);
+        });
+
+        if (inCodeBlock) {
+            output.push(`<pre><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
+        }
+
+        flushParagraph(paragraph, output);
+        flushList(listItems, orderedList, output);
+
+        return output.join("");
+    }
+
+    function setMessageContent(element, content, role = "assistant") {
+        element.dataset.rawContent = content || "";
+
+        if (role === "assistant") {
+            element.innerHTML = renderMarkdown(content);
+        } else {
+            element.textContent = content || "";
+        }
+    }
+
+    function showThinkingLoader(element, label = "IvyGPT is thinking") {
+        element.classList.add("is-thinking");
+        element.innerHTML = `
+            <div class="thinking-loader">
+                <span>${escapeHtml(label)}</span>
+                <span class="thinking-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </span>
+            </div>
+        `;
+    }
+
+    function clearThinkingLoader(element) {
+        element.classList.remove("is-thinking");
+    }
+
+    function parseHeaderInput(value) {
+        const text = value.trim();
+
+        if (!text) {
+            return {};
+        }
+
+        if (text.startsWith("{")) {
+            const parsed = JSON.parse(text);
+
+            if (!parsed || Array.isArray(parsed) || typeof parsed !== "object") {
+                throw new Error("Headers must be a JSON object.");
+            }
+
+            return parsed;
+        }
+
+        return text
+            .split(/\r?\n/)
+            .map(line => line.trim())
+            .filter(Boolean)
+            .reduce((headers, line) => {
+                const separatorIndex = line.indexOf(":");
+
+                if (separatorIndex <= 0) {
+                    throw new Error("Header lines must use 'Name: value'.");
+                }
+
+                const name = line.slice(0, separatorIndex).trim();
+                const headerValue = line.slice(separatorIndex + 1).trim();
+
+                if (!name) {
+                    throw new Error("Header names cannot be empty.");
+                }
+
+                headers[name] = headerValue;
+                return headers;
+            }, {});
+    }
+
     function addMessage(role, content = "") {
         hideWelcome();
 
@@ -1187,7 +1969,7 @@
 
         const messageContent = document.createElement("div");
         messageContent.className = "message-content";
-        messageContent.textContent = content;
+        setMessageContent(messageContent, content, role);
 
         messageDiv.appendChild(avatar);
         messageDiv.appendChild(messageContent);
@@ -1417,7 +2199,7 @@
             stopDictation();
         }
 
-        const selectedModel = modelSelect ? modelSelect.value : "gemini-3.8-flash";
+        const selectedModel = modelSelect ? modelSelect.value : "openai/gpt-4o-mini";
 
         addMessage("user", message);
 
@@ -1436,8 +2218,10 @@
         }
 
         const botElement = addMessage("assistant", "");
+        showThinkingLoader(botElement, "IvyGPT is thinking");
 
         let firstTokenReceived = false;
+        let assistantResponse = "";
 
         function handleStreamData(data) {
             if (!data) return;
@@ -1445,6 +2229,7 @@
             if (data.token !== undefined && data.token !== null) {
                 if (!firstTokenReceived) {
                     firstTokenReceived = true;
+                    clearThinkingLoader(botElement);
 
                     if (likelyTool && toolProgress) {
                         completeToolProgress(toolProgress, likelyTool);
@@ -1453,11 +2238,14 @@
                     statusText.textContent = `Generating with ${selectedModel}...`;
                 }
 
-                botElement.textContent += data.token;
+                assistantResponse += data.token;
+                setMessageContent(botElement, assistantResponse, "assistant");
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             }
 
             if (data.error) {
+                clearThinkingLoader(botElement);
+
                 if (likelyTool && toolProgress) {
                     completeToolProgress(toolProgress, likelyTool);
                 }
@@ -1467,10 +2255,12 @@
                     : "";
 
                 if (data.rate_limited) {
-                    botElement.textContent = data.error + retryCopy;
+                    assistantResponse = data.error + retryCopy;
+                    setMessageContent(botElement, assistantResponse, "assistant");
                     statusText.textContent = "Rate limit reached";
                 } else {
-                    botElement.textContent += "\n\n" + data.error;
+                    assistantResponse += "\n\n" + data.error;
+                    setMessageContent(botElement, assistantResponse, "assistant");
                     statusText.textContent = "Ready";
                 }
 
@@ -1478,6 +2268,8 @@
             }
 
             if (data.done) {
+                clearThinkingLoader(botElement);
+
                 if (likelyTool && toolProgress && !firstTokenReceived) {
                     completeToolProgress(toolProgress, likelyTool);
                 }
@@ -1514,12 +2306,16 @@
                     console.error("Could not parse error response:", error);
                 }
 
-                botElement.textContent = errorText;
+                clearThinkingLoader(botElement);
+                assistantResponse = errorText;
+                setMessageContent(botElement, assistantResponse, "assistant");
                 return;
             }
 
             if (!response.body) {
-                botElement.textContent = "Streaming is not supported by this browser.";
+                clearThinkingLoader(botElement);
+                assistantResponse = "Streaming is not supported by this browser.";
+                setMessageContent(botElement, assistantResponse, "assistant");
                 return;
             }
 
@@ -1566,7 +2362,9 @@
                 completeToolProgress(toolProgress, likelyTool);
             }
 
-            botElement.textContent = "Something went wrong: " + error.message;
+            clearThinkingLoader(botElement);
+            assistantResponse = "Something went wrong: " + error.message;
+            setMessageContent(botElement, assistantResponse, "assistant");
 
         } finally {
             sendBtn.disabled = false;
