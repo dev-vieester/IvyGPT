@@ -1,19 +1,15 @@
-import os
-import sqlite3
-from pathlib import Path
-from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import SystemMessage
+from pydantic import SecretStr
 from langgraph.graph import StateGraph, START, MessagesState
 from langgraph.prebuilt import ToolNode, tools_condition
-from langgraph.checkpoint.sqlite import SqliteSaver
-from tools import tools
+from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
+from psycopg import AsyncConnection
+from psycopg.rows import dict_row
+from ivy_gpt.services.tools import tools
+from ivy_gpt.config import settings
 
-Path("data").mkdir(exist_ok=True)
-
-load_dotenv()
-
-DEFAULT_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+DEFAULT_MODEL = settings.default_model
 
 ALLOWED_MODELS = {
     "gemini-2.5-flash",
@@ -24,7 +20,7 @@ ALLOWED_MODELS = {
 }
 
 SYSTEM_PROMPT = """
-You are a helpful Agentic AI assistant named BappyGPT similar to ChatGPT.
+You are a helpful Agentic AI assistant named IvyGPT similar to ChatGPT.
 
 You can:
 1. Answer normal questions.
@@ -61,7 +57,7 @@ def normalize_model_name(model_name: str | None) -> str:
 
     return model_name
 
-def build_agent(model_name: str):
+async def build_agent(model_name: str):
     """
     Build one LangGraph agent for a selected Gemini model
     """
@@ -69,18 +65,19 @@ def build_agent(model_name: str):
 
     llm = ChatGoogleGenerativeAI(
         model= selected_model,
+        api_key=SecretStr(settings.google_api_key) if settings.google_api_key else None,
         temperature=0.3,
         streaming=True
     )
 
     llm_with_tools = llm.bind_tools(tools)
 
-    def chatbot_node(state: MessagesState):
+    async def chatbot_node(state: MessagesState):
         messages = [
             SystemMessage(content=SYSTEM_PROMPT)
         ] + state["messages"]
 
-        response = llm_with_tools.invoke(messages)
+        response = await llm_with_tools.ainvoke(messages)
 
         return {
             "messages": [response]
@@ -97,8 +94,40 @@ def build_agent(model_name: str):
     workflow.add_conditional_edges("chatbot_node", tools_condition)
     workflow.add_edge("tools", "chatbot_node")
 
-    conn = sqlite3.connect(database="data/langgraph_checkpoints.sqlite",
-                           check_same_thread=False)
-    checkpointer = SqliteSaver(conn)
+    conn = await AsyncConnection.connect(
+        settings.postgres_checkpoint_url,
+        autocommit=True,
+        prepare_threshold=0,
+        row_factory=dict_row
+    )
+    checkpointer = AsyncPostgresSaver(conn)
+    await checkpointer.setup()
 
-    return workflow.compile(checkpointer=checkpointer)
+    return workflow.compile(checkpointer=checkpointer), conn
+
+_AGENT_CACHE = {}
+_CHECKPOINT_CONNECTIONS = {}
+
+
+async def get_agent(model_name: str | None = None):
+    """
+    Return cached LangGraph agent for selected model.
+    If not created yet, create it once and reuse it.
+    """
+
+    selected_model = normalize_model_name(model_name)
+
+    if selected_model not in _AGENT_CACHE:
+        agent, conn = await build_agent(selected_model)
+        _AGENT_CACHE[selected_model] = agent
+        _CHECKPOINT_CONNECTIONS[selected_model] = conn
+
+    return _AGENT_CACHE[selected_model]
+
+
+async def close_agent_connections() -> None:
+    for conn in _CHECKPOINT_CONNECTIONS.values():
+        await conn.close()
+
+    _CHECKPOINT_CONNECTIONS.clear()
+    _AGENT_CACHE.clear()

@@ -1,0 +1,14 @@
+.git
+.idea
+.venv
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+data/
+uploads/
+chroma_db/
+build/
+dist/
+*.egg-info/

@@ -1,25 +1,26 @@
 from pathlib import Path
 from typing import List
-from dotenv import load_dotenv
-import os
 from langchain_chroma import Chroma
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from pydantic import SecretStr
 from pypdf import PdfReader
 import docx2txt
+from ivy_gpt.config import CHROMA_DIR, UPLOADS_DIR, settings
 
-Path("uploads").mkdir(exist_ok=True)
-Path("chroma_db").mkdir(exist_ok=True)
+UPLOADS_DIR.mkdir(exist_ok=True)
+CHROMA_DIR.mkdir(exist_ok=True)
 
 embedding = GoogleGenerativeAIEmbeddings(
-    model="gemini-embedding-001"
+    model="gemini-embedding-001",
+    api_key=SecretStr(settings.google_api_key) if settings.google_api_key else None
 )
 
 vectorstore = Chroma(
     collection_name="IvyGPT_docs",
     embedding_function=embedding,
-    persist_directory="chroma_db"
+    persist_directory=str(CHROMA_DIR)
 )
 
 def read_file_text(file_path: str) -> str:

@@ -1,0 +1,1 @@
+"""IvyGPT application package."""
