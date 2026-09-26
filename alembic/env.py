@@ -1,4 +1,5 @@
 from logging.config import fileConfig
+import sys
 
 from alembic import context
 from sqlalchemy import pool
@@ -52,6 +53,13 @@ async def run_async_migrations() -> None:
 
 def run_migrations_online() -> None:
     import asyncio
+    import selectors
+
+    if sys.platform == "win32":
+        loop_factory = lambda: asyncio.SelectorEventLoop(selectors.SelectSelector())
+        with asyncio.Runner(loop_factory=loop_factory) as runner:
+            runner.run(run_async_migrations())
+        return
 
     asyncio.run(run_async_migrations())
 

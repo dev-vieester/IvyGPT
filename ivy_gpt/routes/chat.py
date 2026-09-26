@@ -1,4 +1,6 @@
 import json
+import logging
+import re
 
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse, StreamingResponse
@@ -15,10 +17,45 @@ from ivy_gpt.services.tools import reset_tool_context, set_tool_context
 
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
+
+RATE_LIMIT_MESSAGE = (
+    "The AI provider is receiving too many requests right now. "
+    "Please wait a moment, then try again."
+)
 
 
 def sse_data(payload: dict) -> str:
     return f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
+
+
+def provider_rate_limit_retry_after(error: Exception) -> int | None:
+    current: BaseException | None = error
+
+    while current is not None:
+        text = str(current).lower()
+
+        if any(
+            marker in text
+            for marker in (
+                "429",
+                "rate limit",
+                "ratelimit",
+                "resource exhausted",
+                "quota exceeded",
+                "too many requests",
+            )
+        ):
+            retry_match = re.search(r"retry[_ -]?delay[^0-9]*(\d+)", text)
+
+            if retry_match:
+                return int(retry_match.group(1))
+
+            return 60
+
+        current = current.__cause__ or current.__context__
+
+    return None
 
 
 def should_stream_chunk(chunk, metadata) -> bool:
@@ -110,8 +147,6 @@ async def chat_stream(
     await create_or_update_conversation(db, current_user.id, thread_id, user_message)
     await save_chat_message(db, current_user.id, thread_id, "user", user_message)
 
-    context_token = set_tool_context(thread_id, current_user.id, db)
-
     config = {
         "configurable": {
             "thread_id": thread_id
@@ -120,6 +155,7 @@ async def chat_stream(
 
     async def event_generator():
         final_answer = ""
+        context_token = set_tool_context(thread_id, current_user.id, db)
 
         try:
             inputs = {
@@ -148,7 +184,19 @@ async def chat_stream(
             yield sse_data({"done": True})
 
         except Exception as e:
-            yield sse_data({"error": str(e)})
+            retry_after = provider_rate_limit_retry_after(e)
+
+            if retry_after is not None:
+                logger.warning("LLM provider rate limit hit: %s", e)
+                yield sse_data({
+                    "error": RATE_LIMIT_MESSAGE,
+                    "rate_limited": True,
+                    "retry_after": retry_after,
+                })
+            else:
+                logger.exception("Chat stream failed")
+                yield sse_data({"error": "Something went wrong while generating a response. Please try again."})
+
             yield sse_data({"done": True})
         finally:
             reset_tool_context(context_token)

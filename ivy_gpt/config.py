@@ -39,6 +39,9 @@ class Settings(BaseSettings):
     smtp_username: str | None = Field(default=None, alias="SMTP_USERNAME")
     smtp_password: str | None = Field(default=None, alias="SMTP_PASSWORD")
     smtp_from_email: str = Field(default="no-reply@ivygpt.local", alias="SMTP_FROM_EMAIL")
+    smtp_from_name: str | None = Field(default=None, alias="SMTP_FROM_NAME")
+    smtp_use_ssl: bool = Field(default=False, alias="SMTP_USE_SSL")
+    smtp_use_tls: bool = Field(default=True, alias="SMTP_USE_TLS")
 
     model_config = SettingsConfigDict(
         env_file=PROJECT_ROOT / ".env",
@@ -48,7 +51,7 @@ class Settings(BaseSettings):
 
     @property
     def default_model(self) -> str:
-        return self.gemini_model or self.google_model or "gemini-2.5-flash"
+        return self.gemini_model or self.google_model or "gemini-3.8-flash"
 
     @property
     def async_database_url(self) -> str:

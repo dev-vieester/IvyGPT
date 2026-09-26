@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -11,10 +11,13 @@ class Base(DeclarativeBase):
 
 class Conversation(Base):
     __tablename__ = "conversation"
+    __table_args__ = (
+        UniqueConstraint("user_id", "thread_id", name="uq_conversation_user_thread"),
+    )
 
     id: Mapped[str] = mapped_column(String, primary_key=True, index=True, default=lambda: str(uuid.uuid4()))
     user_id: Mapped[str | None] = mapped_column(String, ForeignKey("users.id"), index=True, nullable=True)
-    thread_id: Mapped[str] = mapped_column(String, unique=True, index=True)
+    thread_id: Mapped[str] = mapped_column(String, index=True)
     title: Mapped[str] = mapped_column(String, default="New Chat")
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)

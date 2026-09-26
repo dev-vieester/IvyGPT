@@ -645,11 +645,7 @@
             ></textarea>
 
             <select id="modelSelect" class="model-select" title="Select model">
-                <option value="gemini-2.5-flash">gemini-2.5-flash</option>
-                <option value="gemini-2.5-pro">gemini-2.5-pro</option>
-                <option value="gemini-2.5-flash-lite">gemini-2.5-flash-lite</option>
-                <option value="gemini-1.5-flash">gemini-1.5-flash</option>
-                <option value="gemini-1.5-pro">gemini-1.5-pro</option>
+                <option value="gemini-3.8-flash">gemini-3.8-flash</option>
             </select>
 
             <button class="mic-btn" id="micBtn" onclick="toggleDictation()" title="Dictate">
@@ -998,8 +994,10 @@
 
     const savedModel = localStorage.getItem("selected_model");
 
-    if (savedModel && modelSelect) {
+    if (savedModel && modelSelect && Array.from(modelSelect.options).some(option => option.value === savedModel)) {
         modelSelect.value = savedModel;
+    } else if (modelSelect) {
+        localStorage.setItem("selected_model", modelSelect.value);
     }
 
     if (modelSelect) {
@@ -1205,6 +1203,9 @@
 
         const mathPattern = /(\d+\s*[\+\-\*\/]\s*\d+)|calculate|calculation|math|solve/;
         const ragPattern = /document|pdf|file|uploaded|summarize|summary|according to|based on/;
+        const arxivPattern = /arxiv|research paper|academic paper|paper about|papers about|technical research|machine learning research|ai research/;
+        const pubmedPattern = /pubmed|clinical study|clinical trial|medical research|biomedical|biology research|health research|life sciences/;
+        const wikipediaPattern = /wikipedia|encyclopedia|background on|who was|who is|what is|history of|overview of/;
         const memorySavePattern = /remember that|save this|store this|keep in memory|memorize/;
         const memoryRecallPattern = /what do you remember|recall|my memory|remember about me/;
 
@@ -1221,6 +1222,18 @@
 
         if (ragPattern.test(text)) {
             return "Document Search";
+        }
+
+        if (arxivPattern.test(text)) {
+            return "arXiv Search";
+        }
+
+        if (pubmedPattern.test(text)) {
+            return "PubMed Search";
+        }
+
+        if (wikipediaPattern.test(text)) {
+            return "Wikipedia Search";
         }
 
         if (webSearchPattern.test(text)) {
@@ -1404,7 +1417,7 @@
             stopDictation();
         }
 
-        const selectedModel = modelSelect ? modelSelect.value : "gemini-2.5-flash";
+        const selectedModel = modelSelect ? modelSelect.value : "gemini-3.8-flash";
 
         addMessage("user", message);
 
@@ -1449,8 +1462,18 @@
                     completeToolProgress(toolProgress, likelyTool);
                 }
 
-                botElement.textContent += "\n\nError: " + data.error;
-                statusText.textContent = "Ready";
+                const retryCopy = data.retry_after
+                    ? ` Try again in about ${data.retry_after} seconds.`
+                    : "";
+
+                if (data.rate_limited) {
+                    botElement.textContent = data.error + retryCopy;
+                    statusText.textContent = "Rate limit reached";
+                } else {
+                    botElement.textContent += "\n\n" + data.error;
+                    statusText.textContent = "Ready";
+                }
+
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             }
 
@@ -1481,7 +1504,12 @@
 
                 try {
                     const errorData = await response.json();
-                    errorText = errorData.detail || errorData.message || errorText;
+                    errorText = errorData.detail || errorData.message || errorData.error || errorText;
+
+                    if (errorData.rate_limited && errorData.retry_after) {
+                        errorText += ` Try again in about ${errorData.retry_after} seconds.`;
+                        statusText.textContent = "Rate limit reached";
+                    }
                 } catch (error) {
                     console.error("Could not parse error response:", error);
                 }

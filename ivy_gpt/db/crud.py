@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ivy_gpt.db.models import ChatMessage, Conversation, LongTermMemory, RefreshToken, User
@@ -12,34 +13,50 @@ async def create_or_update_conversation(
     thread_id: str,
     first_message: str | None = None
 ) -> None:
-    result = await db.execute(
-        select(Conversation).where(
-            Conversation.thread_id == thread_id,
-            Conversation.user_id == user_id
+    async def get_existing_conversation() -> Conversation | None:
+        result = await db.execute(
+            select(Conversation).where(
+                Conversation.thread_id == thread_id,
+                Conversation.user_id == user_id
+            )
         )
-    )
-    conversation = result.scalar_one_or_none()
+        return result.scalar_one_or_none()
 
-    if not conversation:
-        title = "New Chat"
+    conversation = await get_existing_conversation()
 
-        if first_message:
-            title = first_message.strip()[:40]
-            if len(first_message.strip()) > 40:
-                title += "..."
-
-        conversation = Conversation(
-            user_id=user_id,
-            thread_id=thread_id,
-            title=title,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
-        )
-        db.add(conversation)
-    else:
+    if conversation:
         conversation.updated_at = datetime.utcnow()
+        await db.commit()
+        return
 
-    await db.commit()
+    title = "New Chat"
+
+    if first_message:
+        title = first_message.strip()[:40]
+        if len(first_message.strip()) > 40:
+            title += "..."
+
+    conversation = Conversation(
+        user_id=user_id,
+        thread_id=thread_id,
+        title=title,
+        created_at=datetime.utcnow(),
+        updated_at=datetime.utcnow()
+    )
+    db.add(conversation)
+
+    try:
+        await db.commit()
+    except IntegrityError:
+        await db.rollback()
+        conversation = await get_existing_conversation()
+
+        if conversation:
+            conversation.updated_at = datetime.utcnow()
+            await db.commit()
+            return
+
+        raise
 
 
 async def list_conversations(db: AsyncSession, user_id: str) -> list[Conversation]:

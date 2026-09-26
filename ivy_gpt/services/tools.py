@@ -2,10 +2,23 @@ import math
 from contextvars import ContextVar, Token
 
 from langchain_core.tools import tool
+from langchain_community.tools import (
+    ArxivQueryRun,
+    DuckDuckGoSearchResults,
+    PubmedQueryRun,
+    WikipediaQueryRun,
+)
+from langchain_community.utilities import (
+    ArxivAPIWrapper,
+    DuckDuckGoSearchAPIWrapper,
+    PubMedAPIWrapper,
+    WikipediaAPIWrapper,
+)
 from langchain_tavily import TavilySearch
 from langchain_tavily._utilities import TavilySearchAPIWrapper
 from pydantic import SecretStr
 from sqlalchemy.ext.asyncio import AsyncSession
+import wikipedia
 
 from ivy_gpt.config import settings
 from ivy_gpt.db.crud import save_memory, search_memory
@@ -66,6 +79,51 @@ if settings.tavily_api_key:
 
 web_search = TavilySearch(**web_search_args)
 
+wikipedia.wikipedia.API_URL = "https://en.wikipedia.org/w/api.php"
+wikipedia.wikipedia.USER_AGENT = "IvyGPT/0.1"
+
+wikipedia_search = WikipediaQueryRun(
+    api_wrapper=WikipediaAPIWrapper(
+        top_k_results=3,
+        doc_content_chars_max=1200
+    )
+)
+
+arxiv_search = ArxivQueryRun(
+    api_wrapper=ArxivAPIWrapper(
+        top_k_results=3,
+        doc_content_chars_max=1600
+    )
+)
+
+pubmed_search = PubmedQueryRun(
+    api_wrapper=PubMedAPIWrapper(
+        top_k_results=3,
+        doc_content_chars_max=1600
+    )
+)
+
+duckduckgo_search = DuckDuckGoSearchResults(
+    api_wrapper=DuckDuckGoSearchAPIWrapper(
+        max_results=5,
+        backend="duckduckgo"
+    ),
+    max_results=5,
+    output_format="list"
+)
+
+
+def run_external_tool(tool_name: str, query: str, runnable) -> str:
+    try:
+        result = runnable.invoke(query)
+    except Exception as e:
+        return f"{tool_name} search failed: {str(e)}"
+
+    if not result:
+        return f"No {tool_name} results found."
+
+    return str(result)
+
 
 @tool
 def calculator(expression: str) -> str:
@@ -90,6 +148,49 @@ def calculator(expression: str) -> str:
 
     except Exception as e:
         return f"Calculation error: {str(e)}"
+
+
+@tool
+def search_wikipedia(query: str) -> str:
+    """
+    Search Wikipedia for concise encyclopedia-style background information.
+    Use this for people, places, historical topics, concepts, and general factual summaries.
+    Do not use it for current news or time-sensitive questions.
+    """
+
+    return run_external_tool("Wikipedia", query, wikipedia_search)
+
+
+@tool
+def search_arxiv(query: str) -> str:
+    """
+    Search arXiv for academic papers and technical research summaries.
+    Use this for AI, machine learning, physics, math, computer science, and research-paper questions.
+    """
+
+    return run_external_tool("arXiv", query, arxiv_search)
+
+
+@tool
+def search_pubmed(query: str) -> str:
+    """
+    Search PubMed for biomedical and life-sciences research summaries.
+    Use this for medical research, biology, clinical studies, and health-science literature.
+    Do not provide medical diagnosis; summarize sources and advise professional consultation when appropriate.
+    """
+
+    return run_external_tool("PubMed", query, pubmed_search)
+
+
+@tool
+def search_duckduckgo(query: str) -> str:
+    """
+    Search the public web using DuckDuckGo as a fallback general web search.
+    Use this when Tavily is unavailable, quota-limited, or when broad web results are enough.
+    Prefer Tavily for current events when it is available.
+    """
+
+    return run_external_tool("DuckDuckGo", query, duckduckgo_search)
 
 
 @tool
@@ -137,6 +238,10 @@ async def recall_memory(query: str) -> str:
 tools = [
     calculator,
     search_uploaded_documents,
+    search_wikipedia,
+    search_arxiv,
+    search_pubmed,
+    search_duckduckgo,
     remember_this,
     recall_memory,
     web_search

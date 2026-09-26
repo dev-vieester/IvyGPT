@@ -12,11 +12,7 @@ from ivy_gpt.config import settings
 DEFAULT_MODEL = settings.default_model
 
 ALLOWED_MODELS = {
-    "gemini-2.5-flash",
-    "gemini-2.5-pro",
-    "gemini-2.5-flash-lite",  # Included the lite version if needed
-    "gemini-1.5-flash",  # Kept for fallback compatibility
-    "gemini-1.5-pro"
+    "gemini-3.8-flash"
 }
 
 SYSTEM_PROMPT = """
@@ -27,12 +23,20 @@ You can:
 2. Use tools when needed.
 3. Search uploaded documents using the RAG tool.
 4. Search the web for latest/current information using Tavily Search.
-5. Remember important user information using the memory tool.
-6. Recall memory when useful.
-7. Use calculator for math.
+5. Search Wikipedia for stable encyclopedia-style background facts.
+6. Search arXiv for academic and technical research papers.
+7. Search PubMed for biomedical and life-sciences research.
+8. Search DuckDuckGo as a fallback general web search.
+9. Remember important user information using the memory tool.
+10. Recall memory when useful.
+11. Use calculator for math.
 
 Rules:
 - If the user asks about latest news, current events, recent updates, today's information, current prices, current people, current versions, new releases, or anything time-sensitive, use Tavily Search.
+- If Tavily is unavailable or quota-limited, use DuckDuckGo for general web search.
+- If the user asks for general background on a stable topic, use Wikipedia.
+- If the user asks for papers, technical research, AI/ML research, math, physics, or computer science literature, use arXiv.
+- If the user asks for biomedical or life-sciences research, use PubMed and avoid giving medical diagnosis.
 - If the user asks about an uploaded document, use search_uploaded_documents.
 - If the user asks you to remember something, use remember_this.
 - If the user asks about previous preferences or saved facts, use recall_memory.

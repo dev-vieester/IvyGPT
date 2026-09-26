@@ -88,6 +88,9 @@ Supported values include:
 - `SMTP_USERNAME`
 - `SMTP_PASSWORD`
 - `SMTP_FROM_EMAIL`
+- `SMTP_FROM_NAME`
+- `SMTP_USE_SSL`
+- `SMTP_USE_TLS`
 
 Example local Postgres URL:
 
@@ -119,3 +122,16 @@ http://localhost:8080/auth/google/callback
 
 LangGraph checkpoints now use PostgreSQL through `AsyncPostgresSaver`.
 The checkpoint tables are created automatically when the first agent is built.
+
+## Agent Tools
+
+The agent includes tools for:
+
+- Calculator
+- Uploaded document search through Chroma RAG
+- Tavily current web search
+- DuckDuckGo fallback web search
+- Wikipedia background search
+- arXiv research-paper search
+- PubMed biomedical literature search
+- Long-term memory save and recall

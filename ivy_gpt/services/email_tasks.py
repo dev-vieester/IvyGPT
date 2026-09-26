@@ -1,5 +1,6 @@
 import smtplib
 from email.message import EmailMessage
+from email.utils import formataddr
 
 from celery import Celery
 
@@ -24,12 +25,15 @@ def send_otp_email(email: str, otp: str) -> None:
 
     message = EmailMessage()
     message["Subject"] = subject
-    message["From"] = settings.smtp_from_email
+    message["From"] = formataddr((settings.smtp_from_name, settings.smtp_from_email))
     message["To"] = email
     message.set_content(body)
 
-    with smtplib.SMTP(settings.smtp_host, settings.smtp_port) as server:
-        server.starttls()
+    smtp_class = smtplib.SMTP_SSL if settings.smtp_use_ssl else smtplib.SMTP
+
+    with smtp_class(settings.smtp_host, settings.smtp_port) as server:
+        if settings.smtp_use_tls and not settings.smtp_use_ssl:
+            server.starttls()
 
         if settings.smtp_username and settings.smtp_password:
             server.login(settings.smtp_username, settings.smtp_password)
